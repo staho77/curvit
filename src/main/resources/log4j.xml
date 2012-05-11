@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration debug="false"
+	xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<appender name="LOGFILE" class="org.apache.log4j.rolling.RollingFileAppender">
+		<param name="Append" value="true" />
+		<param name="Threshold" value="WARN" /> 		
+		<rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+			<param name="FileNamePattern" value="${log.path}/appl_%d{yyyy-MM}.log" />
+				<!--  value="${CustomerAppsDir}/${UserName}/logs/appl_%d{yyyy-MM}.log" /> -->
+				
+		</rollingPolicy>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="|%d|%p|%t|%C{1}|%M(%L)|%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="ERROR" />
+			<param name="LevelMax" value="FATAL" />
+		</filter>
+	</appender>
+
+	<appender name="DEBUGFILE" class="org.apache.log4j.rolling.RollingFileAppender">
+		<param name="Append" value="true" />
+		<param name="Threshold" value="DEBUG" /> 		
+		<rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+			<param name="FileNamePattern" value="${log.path}/debug_%d{yyyy-MM}.log" />
+				<!-- value="${CustomerAppsDir}/${UserName}/logs/debug_%d{yyyy-MM}.log" />  -->
+		</rollingPolicy>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="|%d|%p|%t|%C{1}|%M(%L)|%m%n" />
+		</layout>
+	</appender>
+
+	<appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
+		<param name="threshold" value="DEBUG" /> 
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="|%d|%p|%t|%C{1}|%M(%L)|%m%n" />
+		</layout>
+	</appender>
+
+	<logger name="com.mchange">
+		<level value="fatal" />
+	</logger>
+	<logger name="org.apache.myfaces">
+		<level value="error" />
+	</logger>
+	<logger name="org.hibernate.SQL">
+		<level value="fatal" />
+	</logger>
+	<logger name="org.hibernate.type">
+		<level value="fatal" />
+	</logger>
+	<logger name="org.hibernate.tool.hbm2ddl">
+		<level value="fatal" />
+	</logger>
+	<logger name="org.hibernate">
+		<level value="fatal" />
+	</logger>
+	<logger name="org.hibernate.cache">
+		<level value="fatal" />
+	</logger>
+	<logger name="net.sf.ehcache">
+		<level value="fatal" />
+	</logger>
+	<logger name="com">
+		<level value="fatal" />
+	</logger>
+	<logger name="net">
+		<level value="fatal" />
+	</logger>
+	<logger name="org">
+		<level value="fatal" />
+	</logger>
+	
+	<logger name="com.staho">
+		<level value="debug" />
+	</logger>
+
+	<root>
+		<appender-ref ref="LOGFILE" />
+		<appender-ref ref="DEBUGFILE" />
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</log4j:configuration>
+

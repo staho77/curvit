@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<h:head>
+	<title>#{msgs.commonTitleLong}</title>
+	<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=8" />
+	<h:outputScript id="jsCurvit" library="js" name="curvit.js" />
+</h:head>
+<h:body>
+	<h:outputStylesheet id="cssCurvit" library="styles" name="curvit.css" />
+	<div id="body-div">
+		<div id="spacer" />
+		<ui:insert name="header">
+			<ui:include src="header.xhtml" />
+		</ui:insert>
+		<ui:include src="menu.xhtml" />
+		<div id="main">
+			<noscript>
+				<p class="rf-msgs-err" id="error-javascript-disabled">#{msgs.error_JavaScriptDisabled}</p>
+			</noscript>
+			<div id="content">
+				<h:panelGroup id="content-left" layout="block"
+					rendered="#{uiParamContentLeftRendered ne 'false'}">
+					<ui:insert name="content-left">
+						<ui:include src="contentLeft.xhtml" />
+					</ui:insert>
+				</h:panelGroup>
+				<h:panelGroup id="content-right"
+					styleClass="#{(uiParamContentLeftRendered ne 'false') ? '' : 'no-left'}"
+					layout="block">
+					<ui:insert name="content-right" src="contentRight.xhtml" />
+				</h:panelGroup>
+			</div>
+		</div>
+		<ui:include src="footer.xhtml" />
+	</div>
+</h:body>
+
+</html>

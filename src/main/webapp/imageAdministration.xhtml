@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:cc="http://java.sun.com/jsf/composite/ccs">
+
+<ui:composition template="/WEB-INF/templates/master.xhtml">
+	<ui:param name="uiParamContentLeftRendered" value="false" />
+
+	<ui:define name="content-right">
+		<h:form id="newPictureForm">
+			<a4j:queue name="org.richfaces.queue.global" disabled="true" />
+			<rich:messages id="global-messages" globalOnly="true" />
+
+			<h:panelGroup>
+				<a4j:commandLink id="createImageLink" styleClass="no-decor"
+					execute="@this" action="#{imageAdministrationBean.createImage}"
+					render="image-entry-area"
+					oncomplete="#{rich:component('image-popup')}.show();">
+					<h:graphicImage library="images" name="#{'new.gif'}" alt=""
+						title="#{msgs.buttonNewImage}" />
+				</a4j:commandLink>
+			</h:panelGroup>
+
+			<rich:dataGrid id="imageAdministrationList" columns="6"
+				elements="12" value="#{imageAdministrationBean.allImages}"
+				var="image">
+				<rich:panel>
+					<f:facet name="header">
+						<h:outputText value="#{image.fileName}"></h:outputText>
+					</f:facet>
+					<h:panelGrid columns="2"
+						columnClasses="column-logo-square, column-image-icon">
+						<a4j:mediaOutput element="img" cacheable="false" session="false"
+							createContent="#{imageLoader.paint}" value="#{image.id}"
+							mimeType="image/jpeg" rendered="#{not empty image.id}" />
+						<a4j:commandLink styleClass="no-decor" execute="@this"
+							render="confirm-delete"
+							oncomplete="#{rich:component('confirm-delete-image-popup')}.show()">
+							<h:graphicImage library="images" name="delete.gif" alt=""
+								title="#{msgs.buttonDeleteImage}" />
+							<f:setPropertyActionListener
+								target="#{imageAdministrationBean.imageFile}" value="#{image}" />
+						</a4j:commandLink>
+					</h:panelGrid>
+				</rich:panel>
+				<f:facet name="footer">
+					<rich:dataScroller />
+				</f:facet>
+			</rich:dataGrid>
+
+			<rich:jQuery query="focus().select()"
+				selector="#image-entry-area :input:visible:enabled:first"
+				name="focusInput" />
+
+			<rich:popupPanel id="image-popup"
+				header="#{msgs.imageHeader}" autosized="true" modal="true"
+				resizeable="false" domElementAttachment="form"
+				onshow="focusInput();">
+				<f:facet name="controls">
+					<h:commandLink styleClass="no-decor"
+						action="#{imageAdministrationBean.refreshView}" immediate="true"
+						oncomplete="#{rich:component('image-popup')}.hide();">
+						<h:graphicImage value="#{resource['images:icon-close.gif']}"
+							alt="#{msgs.buttonClose}" />
+					</h:commandLink>
+				</f:facet>
+
+				<h:panelGroup id="image-entry-area" layout="block">
+					<h:panelGrid columns="1" style="width: 650px;">
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-image" colon="true"
+									required="false" value="#{msgs.image}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<rich:fileUpload id="entry-image" maxFilesQuantity="1"
+									listHeight="60px"
+									fileUploadListener="#{imageAdministrationBean.uploadListener}"
+									acceptedTypes="#{imageAdministrationBean.masterDataService.dataTypes}"
+									addLabel="#{msgs.buttonBrowse}"
+									clearAllLabel="#{msgs.buttonClear}"
+									uploadLabel="#{msgs.buttonUpload}" doneLabel="#{msgs.uploadOk}"
+									serverErrorLabel="#{msgs.uploadServerError}"
+									sizeExceededLabel="#{msgs.uploadSizeExceeded}">
+									<a4j:ajax event="uploadcomplete" execute="@this"
+										listener="#{imageAdministrationBean.checkImageFile}" />
+									<a4j:ajax event="clear" execute="@this"
+										listener="#{imageAdministrationBean.clearImageFile}" />
+								</rich:fileUpload>
+								<rich:message for="entry-image" />
+							</h:panelGroup>
+						</h:panelGroup>
+					</h:panelGrid>
+
+					<h:panelGrid id="image-buttons-popup" columns="2"
+						styleClass="buttons buttons-popup">
+						<a4j:commandButton id="image-save-popup"
+							value="#{msgs.buttonSave}"
+							action="#{imageAdministrationBean.save}"
+							render="imageAdministrationList" execute="image-popup"
+							oncomplete="if (#{facesContext.maximumSeverity==null}) {#{rich:component('image-popup')}.hide();}" />
+						<a4j:commandButton id="image-abort-popup"
+							value="#{msgs.buttonAbort}"
+							action="#{userAdministrationBean.refreshView}" immediate="true"
+							oncomplete="#{rich:component('image-popup')}.hide();" />
+					</h:panelGrid>
+				</h:panelGroup>
+			</rich:popupPanel>
+
+			<rich:popupPanel id="confirm-delete-image-popup" autosized="true"
+				domElementAttachment="form" header="#{msgs.imageDelete}">
+				<h:panelGroup id="confirm-delete-image">
+					<h:outputText value="#{msgs.imageReallyDelete}" />
+					<h:panelGrid id="buttons-confirm-image" columns="2"
+						styleClass="buttons buttons-confirm">
+						<a4j:commandButton value="#{msgs.commonYes}"
+							action="#{imageAdministrationBean.deleteImage}"
+							render="imageAdministrationList" execute="@this"
+							oncomplete="#{rich:component('confirm-delete-image-popup')}.hide();" />
+						<a4j:commandButton value="#{msgs.commonNo}"
+							onclick="#{rich:component('confirm-delete-image-popup')}.hide(); return false;" />
+					</h:panelGrid>
+				</h:panelGroup>
+			</rich:popupPanel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

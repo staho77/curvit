@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:cc="http://java.sun.com/jsf/composite/ccs">
+
+<ui:composition template="/WEB-INF/templates/master.xhtml">
+	<ui:param name="uiParamContentLeftRendered" value="false" />
+
+	<f:metadata>
+		<f:event type="preRenderView" listener="#{personBean.checkPerson}" />
+	</f:metadata>
+
+	<ui:define name="content-right">
+		<h:form id="newUserForm">
+			<h:panelGroup>
+				<a4j:commandLink id="createPersonLink" styleClass="no-decor"
+					execute="@this" action="#{userAdministrationBean.createPerson}"
+					render="person-entry-area" rendered="#{personBean.administrator}"
+					oncomplete="#{rich:component('person-popup')}.show();">
+					<h:graphicImage library="images" name="#{'new.gif'}" alt=""
+						title="#{msgs.buttonNewPerson}" />
+				</a4j:commandLink>
+			</h:panelGroup>
+
+			<rich:dataTable
+				value="#{personBean.administrator ? userAdministrationSearchBean.allPersons : personBean.personToList}"
+				var="person" id="userAdministrationListTable" style="width: 100%;"
+				rowClasses="odd-row, even-row" rows="#{msgs.commonListPageSize}"
+				noDataLabel="#{msgs[userAdministrationSearchFilterBean.filterOn ? 'listNoDataFilter' : 'listNoData']}">
+
+				<rich:column styleClass="column-icon" headerClass="column-icon">
+					<a4j:commandLink styleClass="no-decor" execute="@this"
+						render="person-entry-area"
+						oncomplete="#{rich:component('person-popup')}.show()">
+						<h:graphicImage library="images" name="#{'edit.gif'}" alt=""
+							title="#{msgs.buttonEditUser}" />
+						<f:setPropertyActionListener
+							target="#{userAdministrationBean.person}" value="#{person}" />
+					</a4j:commandLink>
+				</rich:column>
+
+				<rich:column styleClass="column-icon" headerClass="column-icon"
+					rendered="#{personBean.administrator}">
+					<a4j:commandLink styleClass="no-decor" execute="@this"
+						render="confirm-delete" rendered="#{!person.deleted}"
+						oncomplete="#{rich:component('confirm-delete-popup')}.show()">
+						<h:graphicImage value="#{resource['images:delete.gif']}" alt=""
+							title="#{msgs.buttonDeleteUser}" />
+						<f:setPropertyActionListener
+							target="#{userAdministrationSearchBean.person}" value="#{person}" />
+					</a4j:commandLink>
+				</rich:column>
+
+				<rich:column sortBy="#{person.surname}" id="surname"
+					sortOrder="#{userAdministrationSearchSortingBean.surnameOrder}"
+					filterValue="#{userAdministrationSearchFilterBean.surnameFilter}"
+					filterExpression="#{fn:containsIgnoreCase(person.surname, userAdministrationSearchFilterBean.surnameFilter)}">
+					<f:facet name="header">
+						<h:panelGrid columns="1">
+							<a4j:commandLink value="Surname"
+								render="userAdministrationListTable"
+								action="#{userAdministrationSearchSortingBean.sortBySurname}"
+								styleClass="#{userAdministrationSearchSortingBean.surnameOrder}"
+								execute="@this" />
+							<h:inputText
+								value="#{userAdministrationSearchFilterBean.surnameFilter}"
+								label="surnameFilter" maxlength="50">
+								<a4j:ajax event="keyup"
+									render="userAdministrationListTable@body" />
+							</h:inputText>
+						</h:panelGrid>
+					</f:facet>
+					<h:outputText value="#{person.surname}" />
+				</rich:column>
+
+				<rich:column sortBy="#{person.givenname}" id="givenname"
+					sortOrder="#{userAdministrationSearchSortingBean.givennameOrder}"
+					filterValue="#{userAdministrationSearchFilterBean.givennameFilter}"
+					filterExpression="#{fn:containsIgnoreCase(person.givenname, userAdministrationSearchFilterBean.givennameFilter)}">
+					<f:facet name="header">
+						<h:panelGrid columns="1">
+							<a4j:commandLink value="Givenname"
+								render="userAdministrationListTable"
+								action="#{userAdministrationSearchSortingBean.sortByGivenname}"
+								styleClass="#{userAdministrationSearchSortingBean.givennameOrder}"
+								execute="@this" />
+							<h:inputText
+								value="#{userAdministrationSearchFilterBean.givennameFilter}"
+								label="givennameFilter" maxlength="50">
+								<a4j:ajax event="keyup"
+									render="userAdministrationListTable@body" />
+							</h:inputText>
+						</h:panelGrid>
+					</f:facet>
+					<h:outputText value="#{person.givenname}" />
+				</rich:column>
+
+				<rich:column sortBy="#{person.department}" id="department"
+					sortOrder="#{userAdministrationSearchSortingBean.departmentOrder}"
+					filterValue="#{userAdministrationSearchFilterBean.departmentFilter}"
+					filterExpression="#{fn:containsIgnoreCase(person.department, userAdministrationSearchFilterBean.departmentFilter)}">
+					<f:facet name="header">
+						<h:panelGrid columns="1">
+							<a4j:commandLink value="Department"
+								render="userAdministrationListTable"
+								action="#{userAdministrationSearchSortingBean.sortByDepartment}"
+								styleClass="#{userAdministrationSearchSortingBean.departmentOrder}"
+								execute="@this" />
+							<h:inputText
+								value="#{userAdministrationSearchFilterBean.departmentFilter}"
+								label="departmentFilter" maxlength="50">
+								<a4j:ajax event="keyup"
+									render="userAdministrationListTable@body" />
+							</h:inputText>
+						</h:panelGrid>
+					</f:facet>
+					<h:outputText value="#{person.department}" />
+				</rich:column>
+
+				<rich:column sortBy="#{person.country.name}" id="country"
+					sortOrder="#{userAdministrationSearchSortingBean.countryOrder}"
+					filterValue="#{userAdministrationSearchFilterBean.countryFilter}"
+					filterExpression="#{fn:containsIgnoreCase(person.country, userAdministrationSearchFilterBean.countryFilter)}">
+					<f:facet name="header">
+						<h:panelGrid columns="1">
+							<a4j:commandLink value="Country"
+								render="userAdministrationListTable"
+								action="#{userAdministrationSearchSortingBean.sortByCountry}"
+								styleClass="#{userAdministrationSearchSortingBean.countryOrder}"
+								execute="@this" />
+							<h:inputText
+								value="#{userAdministrationSearchFilterBean.countryFilter}"
+								label="countryFilter" maxlength="50">
+								<a4j:ajax event="keyup"
+									render="userAdministrationListTable@body" />
+							</h:inputText>
+						</h:panelGrid>
+					</f:facet>
+					<h:outputText value="#{person.country.name}" />
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller id="ds1" for="userAdministrationListTable" />
+				</f:facet>
+			</rich:dataTable>
+
+			<rich:jQuery query="focus().select()"
+				selector="#person-entry-area :input:visible:enabled:first"
+				name="focusInput" />
+
+			<rich:popupPanel id="person-popup" header="#{msgs.user}"
+				autosized="true" modal="true" resizeable="false"
+				domElementAttachment="form" onshow="focusInput();">
+				<f:facet name="controls">
+					<h:commandLink styleClass="no-decor"
+						action="#{userAdministrationBean.refreshView}" immediate="true"
+						oncomplete="#{rich:component('person-popup')}.hide();">
+						<h:graphicImage value="#{resource['images:icon-close.gif']}"
+							alt="#{msgs.buttonClose}" />
+					</h:commandLink>
+				</f:facet>
+
+				<a4j:queue name="org.richfaces.queue.global" disabled="true" />
+				<rich:messages id="global-messages" globalOnly="true" />
+
+				<h:panelGroup id="person-entry-area" layout="block">
+					<h:panelGrid columns="1" style="width: 650px;">
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-titel" colon="true"
+									required="false" value="#{msgs.userTitle}" />
+							</h:panelGroup>
+
+							<h:panelGroup>
+								<rich:select id="entry-title"
+									value="#{userAdministrationBean.person.title}" required="false">
+									<f:selectItems
+										value="#{userAdministrationBean.masterDataService.personTitles}"
+										var="title" itemLabel="#{msgs[title.key]}" />
+									<rich:validator />
+								</rich:select>
+								<rich:message for="entry-title" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-givenname" colon="true"
+									required="true" value="#{msgs.userGivenname}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-givenname"
+									value="#{userAdministrationBean.person.givenname}"
+									style="width: 197px;" maxlength="50" required="true">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-givenname" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-surname" colon="true"
+									required="true" value="#{msgs.userSurname}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-surname"
+									value="#{userAdministrationBean.person.surname}"
+									style="width: 197px;" maxlength="50" required="true">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-surname" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-role" colon="true" required="true"
+									value="#{msgs.userRole}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<rich:select id="entry-role"
+									value="#{userAdministrationBean.person.role}" required="true">
+									<f:selectItems
+										value="#{userAdministrationBean.masterDataService.roles}"
+										var="item" itemValue="#{item}" itemLabel="#{item.name}" />
+									<rich:validator />
+								</rich:select>
+								<rich:message for="entry-role" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-department" colon="true"
+									required="false" value="#{msgs.userDepartment}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-department"
+									value="#{userAdministrationBean.person.department}"
+									style="width: 197px;" maxlength="50" required="false">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-department" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-country" colon="true"
+									required="true" value="#{msgs.userCountry}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<rich:select id="entry-country"
+									value="#{userAdministrationBean.person.country}"
+									required="true">
+									<f:selectItems
+										value="#{userAdministrationBean.masterDataService.countries}"
+										var="item" itemValue="#{item}" itemLabel="#{item.name}" />
+									<rich:validator />
+								</rich:select>
+								<rich:message for="entry-country" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-email" colon="true" required="true"
+									value="#{msgs.userEmail}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-email"
+									value="#{userAdministrationBean.person.email}"
+									style="width: 197px;" maxlength="256" required="true">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-email" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-phone" colon="true"
+									required="false" value="#{msgs.userPhone}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-phone"
+									value="#{userAdministrationBean.person.phone}"
+									style="width: 197px;" maxlength="50" required="false">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-phone" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-mobile" colon="true"
+									required="false" value="#{msgs.userMobile}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-mobile"
+									value="#{userAdministrationBean.person.mobile}"
+									style="width: 197px;" maxlength="50" required="false">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-mobile" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-fax" colon="true" required="false"
+									value="#{msgs.userFax}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-fax"
+									value="#{userAdministrationBean.person.fax}"
+									style="width: 197px;" maxlength="50" required="false">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-fax" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-website" colon="true"
+									required="false" value="#{msgs.userWebsite}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-website"
+									value="#{userAdministrationBean.person.website}"
+									style="width: 300px;" styleClass="changeable" maxlength="50"
+									required="false">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-website" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-linkFacebook" colon="true"
+									required="false" value="#{msgs.userLinkFacebook}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-linkFacebook"
+									value="#{userAdministrationBean.person.linkFacebook}"
+									style="width: 300px;" styleClass="changeable" maxlength="50"
+									required="false">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-linkFacebook" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-linkGithub" colon="true"
+									required="false" value="#{msgs.userLinkGithub}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-linkGithub"
+									value="#{userAdministrationBean.person.linkGithub}"
+									style="width: 300px;" styleClass="changeable" maxlength="50"
+									required="false">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-linkGithub" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-linkLinkedIn" colon="true"
+									required="false" value="#{msgs.userLinkLinkedIn}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-linkLinkedIn"
+									value="#{userAdministrationBean.person.linkLinkedIn}"
+									style="width: 300px;" styleClass="changeable" maxlength="50"
+									required="false">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-linkLinkedIn" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-skypeName" colon="true"
+									required="false" value="#{msgs.userSkypeName}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-skypeName"
+									value="#{userAdministrationBean.person.skypeName}"
+									style="width: 300px;" styleClass="changeable" maxlength="50"
+									required="false">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-skypeName" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-image" colon="true"
+									required="false" value="#{msgs.personPhoto}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<rich:select id="entry-image"
+									value="#{userAdministrationBean.person.imageFile}"
+									required="false">
+									<f:selectItems
+										value="#{userAdministrationBean.masterDataService.imageFiles}"
+										var="item" itemValue="#{item}" itemLabel="#{item.fileName}" />
+									<rich:validator />
+								</rich:select>
+								<rich:message for="entry-image" />
+							</h:panelGroup>
+						</h:panelGroup>
+					</h:panelGrid>
+
+					<h:panelGrid id="buttons-popup" columns="2"
+						styleClass="buttons buttons-popup">
+						<a4j:commandButton id="save-popup" value="#{msgs.buttonSave}"
+							action="#{userAdministrationBean.save}"
+							render="userAdministrationListTable, :contactInfo, :menuToolbar, :header-right-foto"
+							execute="person-popup"
+							oncomplete="if (#{facesContext.maximumSeverity==null}) {#{rich:component('person-popup')}.hide();}" />
+						<a4j:commandButton id="abort-popup" value="#{msgs.buttonAbort}"
+							action="#{userAdministrationBean.refreshView}" immediate="true"
+							oncomplete="#{rich:component('person-popup')}.hide();" />
+					</h:panelGrid>
+				</h:panelGroup>
+			</rich:popupPanel>
+
+			<rich:popupPanel id="confirm-delete-popup" autosized="true"
+				domElementAttachment="form" header="#{msgs.personDelete}">
+				<h:panelGroup id="confirm-delete">
+					<h:outputText value="#{msgs.personReallyDelete}" />
+					<h:panelGrid id="buttons-confirm" columns="2"
+						styleClass="buttons buttons-confirm">
+						<a4j:commandButton value="#{msgs.commonYes}"
+							action="#{userAdministrationSearchBean.deletePerson}"
+							render="userAdministrationListTable" execute="@this"
+							oncomplete="#{rich:component('confirm-delete-popup')}.hide();" />
+						<a4j:commandButton value="#{msgs.commonNo}"
+							onclick="#{rich:component('confirm-delete-popup')}.hide(); return false;" />
+					</h:panelGrid>
+				</h:panelGroup>
+			</rich:popupPanel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

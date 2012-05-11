@@ -1,0 +1,664 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:cc="http://java.sun.com/jsf/composite/ccs">
+
+<ui:composition template="WEB-INF/templates/master.xhtml">
+
+	<ui:param name="uiParamContentLeftRendered" value="false" />
+
+	<f:metadata>
+		<f:event type="preRenderView"
+			listener="#{personBean.checkPerson}" />
+	</f:metadata>
+
+	<ui:define name="content-right">
+		<h:form id="userForm">
+			<a4j:queue name="org.richfaces.queue.global" disabled="true" />
+			<rich:messages id="global-messages" globalOnly="true" />
+
+			<rich:collapsiblePanel header="#{msgs.summaryHeader}"
+				id="summaryPanel" switchType="client">
+				<h:panelGroup>
+					<a4j:commandLink id="createSummaryLink" styleClass="no-decor"
+						execute="@this" action="#{personBean.createPersonSummary}"
+						render="summary-entry-area" rendered="#{empty personBean.person.summary}"
+						oncomplete="#{rich:component('summary-popup')}.show();">
+						<h:graphicImage library="images" name="#{'new.gif'}" alt=""
+							title="#{msgs.buttonNewSummary}" />
+					</a4j:commandLink>
+					<a4j:commandLink styleClass="no-decor" execute="@this"
+						oncomplete="#{rich:component('summary-popup')}.show()"
+						render="summary-entry-area" rendered="#{not empty personBean.person.summary}">
+						<h:graphicImage library="images" name="#{'edit.gif'}" alt=""
+							title="#{msgs.buttonEditSummary}" />
+						<f:setPropertyActionListener target="#{personBean.person.summary}"
+							value="#{personBean.person.summary}" />
+					</a4j:commandLink>
+				</h:panelGroup>
+				<ul>
+					<h:panelGroup>
+						<li><h:outputText
+								value="#{personBean.person.summary.description1}" /></li>
+					</h:panelGroup>
+					<h:panelGroup
+						rendered="#{not empty personBean.person.summary.description2}">
+						<li><h:outputText
+								value="#{personBean.person.summary.description2}" /></li>
+					</h:panelGroup>
+					<h:panelGroup
+						rendered="#{not empty personBean.person.summary.description3}">
+						<li><h:outputText
+								value="#{personBean.person.summary.description3}"
+								rendered="#{not empty personBean.person.summary.description3}" /></li>
+					</h:panelGroup>
+					<h:panelGroup
+						rendered="#{not empty personBean.person.summary.description4}">
+						<li><h:outputText
+								value="#{personBean.person.summary.description4}"
+								rendered="#{not empty personBean.person.summary.description4}" /></li>
+					</h:panelGroup>
+				</ul>
+			</rich:collapsiblePanel>
+
+			<rich:collapsiblePanel header="#{msgs.educationHeader}"
+				id="educationPanel" switchType="client">
+				<h:panelGroup>
+					<a4j:commandLink id="createEducationLink" styleClass="no-decor"
+						execute="@this" action="#{personBean.createPersonEducation}"
+						render="education-entry-area"
+						oncomplete="#{rich:component('education-popup')}.show();">
+						<h:graphicImage library="images" name="#{'new.gif'}" alt=""
+							title="#{msgs.buttonNewEducation}" />
+					</a4j:commandLink>
+				</h:panelGroup>
+				<rich:list value="#{personBean.person.educations}" var="education"
+					id="educationsList">
+					<h:outputText value="#{education.yearFrom}" />
+					<h:outputText value=" - " />
+					<h:outputText value="#{education.yearTo}" />
+					<br />
+					<h:panelGrid columns="4"
+						columnClasses="column-icon, column-icon, empty, column-logo"
+						rowClasses="even-row, odd-row" width="100%">
+						<h:panelGroup styleClass="column-icon">
+							<a4j:commandLink styleClass="no-decor" execute="@this"
+								oncomplete="#{rich:component('education-popup')}.show()"
+								render="education-entry-area">
+								<h:graphicImage library="images" name="#{'edit.gif'}" alt=""
+									title="#{msgs.buttonEditEducation}" />
+								<f:setPropertyActionListener target="#{personBean.education}"
+									value="#{education}" />
+							</a4j:commandLink>
+						</h:panelGroup>
+						<h:panelGroup styleClass="column-icon">
+							<a4j:commandLink styleClass="no-decor" execute="@this"
+								render="confirm-delete"
+								oncomplete="#{rich:component('confirm-delete-education-popup')}.show()">
+								<h:graphicImage library="images" name="delete.gif" alt=""
+									title="#{msgs.buttonDeleteEducation}" />
+								<f:setPropertyActionListener target="#{personBean.education}"
+									value="#{education}" />
+							</a4j:commandLink>
+						</h:panelGroup>
+						<h:panelGroup>
+							<h:panelGrid columns="2">
+								<h:outputText value="#{msgs.personSchool}:"
+									style="font-weight: bold" />
+								<h:outputText value="#{education.name}" />
+								<h:outputText value="#{msgs.personSpecialization}:"
+									style="font-weight: bold" />
+								<h:outputText value="#{education.specialization}" />
+								<h:outputText value="#{msgs.personDegree}:"
+									style="font-weight: bold" />
+								<h:outputText value="#{education.degree}" />
+							</h:panelGrid>
+						</h:panelGroup>
+						<h:panelGroup styleClass="right-align">
+							<h:outputLink styleClass="no-decor"
+								disabled="#{empty education.website}"
+								value="#{education.website}" target="_blank">
+								<a4j:mediaOutput element="img" cacheable="false" session="false"
+									createContent="#{imageLoader.paint}"
+									value="#{education.imageFile.id}" mimeType="image/jpeg"
+									rendered="#{not empty education.imageFile.id}" />
+							</h:outputLink>
+						</h:panelGroup>
+					</h:panelGrid>
+					<br />
+				</rich:list>
+			</rich:collapsiblePanel>
+
+			<rich:collapsiblePanel header="#{msgs.careerHeader}" id="careerPanel"
+				switchType="client">
+				<h:panelGroup>
+					<a4j:commandLink id="createCareerLink" styleClass="no-decor"
+						execute="@this" action="#{personBean.createPersonCareer}"
+						render="career-entry-area"
+						oncomplete="#{rich:component('career-popup')}.show();">
+						<h:graphicImage library="images" name="#{'new.gif'}" alt=""
+							title="#{msgs.buttonNewCareer}" />
+					</a4j:commandLink>
+				</h:panelGroup>
+				<rich:list value="#{personBean.person.careers}" var="career"
+					id="careersList">
+					<h:outputText value="#{career.monthFrom}" />
+					<h:outputText value="/" />
+					<h:outputText value="#{career.yearFrom}" />
+					<h:outputText value=" - " />
+					<h:outputText value="#{career.monthTo}" />
+					<h:outputText value="/" />
+					<h:outputText value="#{career.yearTo}" />
+					<br />
+					<h:panelGrid columns="4"
+						columnClasses="column-icon, column-icon, empty, column-logo"
+						rowClasses="even-row, odd-row" width="100%">
+						<h:panelGroup styleClass="column-icon">
+							<a4j:commandLink styleClass="no-decor" execute="@this"
+								oncomplete="#{rich:component('career-popup')}.show()"
+								render="career-entry-area">
+								<h:graphicImage library="images" name="#{'edit.gif'}" alt=""
+									title="#{msgs.buttonEditCareer}" />
+								<f:setPropertyActionListener target="#{personBean.career}"
+									value="#{career}" />
+							</a4j:commandLink>
+						</h:panelGroup>
+						<h:panelGroup styleClass="column-icon">
+							<a4j:commandLink styleClass="no-decor" execute="@this"
+								render="confirm-delete"
+								oncomplete="#{rich:component('confirm-delete-career-popup')}.show()">
+								<h:graphicImage library="images" name="delete.gif" alt=""
+									title="#{msgs.buttonDeleteCareer}" />
+								<f:setPropertyActionListener target="#{personBean.career}"
+									value="#{career}" />
+							</a4j:commandLink>
+						</h:panelGroup>
+						<h:panelGroup>
+							<h:panelGrid columns="2">
+								<h:outputText value="#{msgs.personRole}:"
+									style="font-weight: bold" />
+								<h:outputText value="#{career.role.name}" />
+								<h:outputText value="#{msgs.personEmployer}:"
+									style="font-weight: bold" />
+								<h:outputText value="#{career.name}" />
+								<h:outputText value="#{msgs.personResponsibility}:"
+									style="font-weight: bold" />
+								<h:outputText value="#{career.responsibility}" />
+							</h:panelGrid>
+						</h:panelGroup>
+						<h:panelGroup styleClass="right-align">
+							<h:outputLink styleClass="no-decor"
+								disabled="#{empty career.website}" value="#{career.website}"
+								target="_blank">
+								<a4j:mediaOutput element="img" cacheable="false" session="false"
+									createContent="#{imageLoader.paint}"
+									value="#{career.imageFile.id}" mimeType="image/jpeg"
+									rendered="#{not empty career.imageFile.id}" />
+							</h:outputLink>
+						</h:panelGroup>
+					</h:panelGrid>
+					<br />
+				</rich:list>
+			</rich:collapsiblePanel>
+
+			<rich:jQuery query="focus().select()"
+				selector="#career-entry-area :input:visible:enabled:first"
+				name="focusInput" />
+
+			<rich:popupPanel id="summary-popup"
+				header="#{msgs.summaryHeader}" autosized="true" modal="true"
+				resizeable="false" domElementAttachment="form"
+				onshow="focusInput();">
+				<f:facet name="controls">
+					<h:commandLink styleClass="no-decor"
+						action="#{userAdministrationBean.refreshView}" immediate="true"
+						oncomplete="#{rich:component('summary-popup')}.hide();">
+						<h:graphicImage value="#{resource['images:icon-close.gif']}"
+							alt="#{msgs.buttonClose}" />
+					</h:commandLink>
+				</f:facet>
+
+				<h:panelGroup id="summary-entry-area" layout="block">
+					<h:panelGrid columns="1" style="width: 650px;">
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-description1" colon="true"
+									required="true" value="#{msgs.personDescription1}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputTextarea id="entry-description1"
+									value="#{personBean.person.summary.description1}" rows="6"
+									style="width: 300px;" styleClass="changeable" required="true"
+									onkeydown="limitMaxLength(this, 1024)"
+									onkeyup="limitMaxLength(this, 1024)">
+									<rich:validator />
+								</h:inputTextarea>
+								<rich:message for="entry-description1" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-description2" colon="true"
+									required="false" value="#{msgs.personDescription2}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputTextarea id="entry-description2"
+									value="#{personBean.person.summary.description2}" rows="6"
+									style="width: 300px;" styleClass="changeable" required="false"
+									onkeydown="limitMaxLength(this, 1024)"
+									onkeyup="limitMaxLength(this, 1024)">
+									<rich:validator />
+								</h:inputTextarea>
+								<rich:message for="entry-description2" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-description3" colon="true"
+									required="false" value="#{msgs.personDescription3}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputTextarea id="entry-description3"
+									value="#{personBean.person.summary.description3}" rows="6"
+									style="width: 300px;" styleClass="changeable" required="false"
+									onkeydown="limitMaxLength(this, 1024)"
+									onkeyup="limitMaxLength(this, 1024)">
+									<rich:validator />
+								</h:inputTextarea>
+								<rich:message for="entry-description3" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-description4" colon="true"
+									required="false" value="#{msgs.personDescription4}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputTextarea id="entry-description4"
+									value="#{personBean.person.summary.description4}" rows="6"
+									style="width: 300px;" styleClass="changeable" required="false"
+									onkeydown="limitMaxLength(this, 1024)"
+									onkeyup="limitMaxLength(this, 1024)">
+									<rich:validator />
+								</h:inputTextarea>
+								<rich:message for="entry-description4" />
+							</h:panelGroup>
+						</h:panelGroup>
+					</h:panelGrid>
+
+					<h:panelGrid id="summary-buttons-popup" columns="2"
+						styleClass="buttons buttons-popup">
+						<a4j:commandButton id="summary-save-popup"
+							value="#{msgs.buttonSave}"
+							action="#{personBean.savePersonSummary}" render="summaryPanel"
+							execute="summary-popup"
+							oncomplete="if (#{facesContext.maximumSeverity==null}) {#{rich:component('summary-popup')}.hide();}" />
+						<a4j:commandButton id="summary-abort-popup"
+							value="#{msgs.buttonAbort}"
+							action="#{userAdministrationBean.refreshView}" immediate="true"
+							oncomplete="#{rich:component('summary-popup')}.hide();" />
+					</h:panelGrid>
+				</h:panelGroup>
+			</rich:popupPanel>
+
+			<rich:popupPanel id="education-popup"
+				header="#{msgs.educationHeader}" autosized="true" modal="true"
+				resizeable="false" domElementAttachment="form"
+				onshow="focusInput();">
+				<f:facet name="controls">
+					<h:commandLink styleClass="no-decor"
+						action="#{userAdministrationBean.refreshView}" immediate="true"
+						oncomplete="#{rich:component('education-popup')}.hide();">
+						<h:graphicImage value="#{resource['images:icon-close.gif']}"
+							alt="#{msgs.buttonClose}" />
+					</h:commandLink>
+				</f:facet>
+
+				<h:panelGroup id="education-entry-area" layout="block">
+					<h:panelGrid columns="1" style="width: 650px;">
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-yearFromEdu" colon="true"
+									required="true" value="#{msgs.personYearFrom}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-yearFromEdu"
+									value="#{personBean.education.yearFrom}" style="width: 50px;"
+									styleClass="changeable" maxlength="100" required="true">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-yearFromEdu" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-yearToEdu" colon="true"
+									required="true" value="#{msgs.personYearTo}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-yearToEdu"
+									value="#{personBean.education.yearTo}" style="width: 50px;"
+									styleClass="changeable" maxlength="100" required="true">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-yearToEdu" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-schoolName" colon="true"
+									required="true" value="#{msgs.personSchool}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-schoolName"
+									value="#{personBean.education.name}" style="width: 450px;"
+									styleClass="changeable" maxlength="100" required="true">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-schoolName" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-specialization" colon="true"
+									required="true" value="#{msgs.personSpecialization}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-specialization"
+									value="#{personBean.education.specialization}"
+									style="width: 300px;" styleClass="changeable" maxlength="100"
+									required="true">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-specialization" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-degree" colon="true"
+									required="true" value="#{msgs.personDegree}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<rich:select id="entry-degree"
+									value="#{personBean.education.degree}" required="true">
+									<f:selectItems
+										value="#{userAdministrationBean.masterDataService.educationDegrees}"
+										var="degree" itemLabel="#{degree}" />
+									<rich:validator />
+								</rich:select>
+								<rich:message for="entry-degree" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-websiteEdu" colon="true"
+									required="false" value="#{msgs.userWebsite}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-websiteEdu"
+									value="#{personBean.education.website}" style="width: 300px;"
+									styleClass="changeable" maxlength="50" required="false">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-websiteEdu" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-imageEdu" colon="true"
+									required="false" value="#{msgs.personImage}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<rich:select id="entry-imageEdu"
+									value="#{personBean.education.imageFile}" required="false">
+									<f:selectItems
+										value="#{userAdministrationBean.masterDataService.imageFiles}"
+										var="item" itemValue="#{item}" itemLabel="#{item.fileName}" />
+									<rich:validator />
+								</rich:select>
+								<rich:message for="entry-imageEdu" />
+							</h:panelGroup>
+						</h:panelGroup>
+					</h:panelGrid>
+
+					<h:panelGrid id="education-buttons-popup" columns="2"
+						styleClass="buttons buttons-popup">
+						<a4j:commandButton id="education-save-popup"
+							value="#{msgs.buttonSave}"
+							action="#{personBean.addPersonEducation}" render="educationPanel"
+							execute="education-popup"
+							oncomplete="if (#{facesContext.maximumSeverity==null}) {#{rich:component('education-popup')}.hide();}" />
+						<a4j:commandButton id="education-abort-popup"
+							value="#{msgs.buttonAbort}"
+							action="#{userAdministrationBean.refreshView}" immediate="true"
+							oncomplete="#{rich:component('education-popup')}.hide();" />
+					</h:panelGrid>
+				</h:panelGroup>
+			</rich:popupPanel>
+
+			<rich:popupPanel id="career-popup" header="#{msgs.careerHeader}"
+				autosized="true" modal="true" resizeable="false"
+				domElementAttachment="form" onshow="focusInput();">
+				<f:facet name="controls">
+					<h:commandLink styleClass="no-decor"
+						action="#{userAdministrationBean.refreshView}" immediate="true"
+						oncomplete="#{rich:component('career-popup')}.hide();">
+						<h:graphicImage value="#{resource['images:icon-close.gif']}"
+							alt="#{msgs.buttonClose}" />
+					</h:commandLink>
+				</f:facet>
+
+				<h:panelGroup id="career-entry-area" layout="block">
+					<h:panelGrid columns="1" style="width: 650px;">
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-monthFromCar" colon="true"
+									required="true" value="#{msgs.personMonthYearFrom}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<rich:select value="#{personBean.career.monthFrom}"
+									id="entry-monthFromCar">
+									<f:selectItem itemLabel="" itemValue="" />
+									<f:selectItem itemLabel="#{msgs.jan}" itemValue="01" />
+									<f:selectItem itemLabel="#{msgs.feb}" itemValue="02" />
+									<f:selectItem itemLabel="#{msgs.mar}" itemValue="03" />
+									<f:selectItem itemLabel="#{msgs.apr}" itemValue="04" />
+									<f:selectItem itemLabel="#{msgs.may}" itemValue="05" />
+									<f:selectItem itemLabel="#{msgs.jun}" itemValue="06" />
+									<f:selectItem itemLabel="#{msgs.jul}" itemValue="07" />
+									<f:selectItem itemLabel="#{msgs.aug}" itemValue="08" />
+									<f:selectItem itemLabel="#{msgs.sep}" itemValue="09" />
+									<f:selectItem itemLabel="#{msgs.oct}" itemValue="10" />
+									<f:selectItem itemLabel="#{msgs.nov}" itemValue="11" />
+									<f:selectItem itemLabel="#{msgs.dec}" itemValue="12" />
+								</rich:select>
+								<h:outputText value=" / " />
+								<h:inputText id="entry-yearFromCar"
+									value="#{personBean.career.yearFrom}" style="width: 50px;"
+									styleClass="changeable" maxlength="100" required="true">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-monthFromCar" />
+								<rich:message for="entry-yearFromCar" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-monthToCar" colon="true"
+									required="true" value="#{msgs.personMonthYearTo}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<rich:select value="#{personBean.career.monthTo}"
+									id="entry-monthToCar">
+									<f:selectItem itemLabel="" itemValue="" />
+									<f:selectItem itemLabel="#{msgs.jan}" itemValue="01" />
+									<f:selectItem itemLabel="#{msgs.feb}" itemValue="02" />
+									<f:selectItem itemLabel="#{msgs.mar}" itemValue="03" />
+									<f:selectItem itemLabel="#{msgs.apr}" itemValue="04" />
+									<f:selectItem itemLabel="#{msgs.may}" itemValue="05" />
+									<f:selectItem itemLabel="#{msgs.jun}" itemValue="06" />
+									<f:selectItem itemLabel="#{msgs.jul}" itemValue="07" />
+									<f:selectItem itemLabel="#{msgs.aug}" itemValue="08" />
+									<f:selectItem itemLabel="#{msgs.sep}" itemValue="09" />
+									<f:selectItem itemLabel="#{msgs.oct}" itemValue="10" />
+									<f:selectItem itemLabel="#{msgs.nov}" itemValue="11" />
+									<f:selectItem itemLabel="#{msgs.dec}" itemValue="12" />
+								</rich:select>
+								<h:outputText value=" / " />
+								<h:inputText id="entry-yearToCar"
+									value="#{personBean.career.yearTo}" style="width: 50px;"
+									styleClass="changeable" maxlength="100" required="true">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-monthToCar" />
+								<rich:message for="entry-yearToCar" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-role" colon="true" required="true"
+									value="#{msgs.personRole}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<rich:select id="entry-role" value="#{personBean.career.role}"
+									required="true" styleClass="changeable">
+									<f:selectItems value="#{personBean.masterDataService.roles}"
+										var="item" itemValue="#{item}" itemLabel="#{item.name}" />
+									<rich:validator />
+								</rich:select>
+								<rich:message for="entry-role" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-employerName" colon="true"
+									required="true" value="#{msgs.personEmployer}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-employerName"
+									value="#{personBean.career.name}" style="width: 300px;"
+									styleClass="changeable" maxlength="100" required="true">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-employerName" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-responsibility" colon="true"
+									required="false" value="#{msgs.personResponsibility}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputTextarea id="entry-responsibility"
+									value="#{personBean.career.responsibility}" rows="6"
+									style="width: 300px;" styleClass="changeable" required="false"
+									onkeydown="limitMaxLength(this, 512)"
+									onkeyup="limitMaxLength(this, 512)">
+									<rich:validator />
+								</h:inputTextarea>
+								<rich:message for="entry-responsibility" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-websiteCar" colon="true"
+									required="false" value="#{msgs.userWebsite}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<h:inputText id="entry-websiteCar"
+									value="#{personBean.career.website}" style="width: 300px;"
+									styleClass="changeable" maxlength="50" required="false">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="entry-websiteCar" />
+							</h:panelGroup>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:panelGroup styleClass="popup-row">
+								<cc:outputLabel forId="entry-imageCar" colon="true"
+									required="false" value="#{msgs.personImage}" />
+							</h:panelGroup>
+							<h:panelGroup>
+								<rich:select id="entry-imageCar"
+									value="#{personBean.career.imageFile}" required="false">
+									<f:selectItems
+										value="#{userAdministrationBean.masterDataService.imageFiles}"
+										var="item" itemValue="#{item}" itemLabel="#{item.fileName}" />
+									<rich:validator />
+								</rich:select>
+								<rich:message for="entry-imageCar" />
+							</h:panelGroup>
+						</h:panelGroup>
+					</h:panelGrid>
+
+					<h:panelGrid id="career-buttons-popup" columns="2"
+						styleClass="buttons buttons-popup">
+						<a4j:commandButton id="career-save-popup"
+							value="#{msgs.buttonSave}" action="#{personBean.addPersonCareer}"
+							render="careerPanel" execute="career-popup"
+							oncomplete="if (#{facesContext.maximumSeverity==null}) {#{rich:component('career-popup')}.hide();}" />
+						<a4j:commandButton id="career-abort-popup"
+							value="#{msgs.buttonAbort}"
+							action="#{userAdministrationBean.refreshView}" immediate="true"
+							oncomplete="#{rich:component('career-popup')}.hide();" />
+					</h:panelGrid>
+				</h:panelGroup>
+			</rich:popupPanel>
+
+			<rich:popupPanel id="confirm-delete-education-popup" autosized="true"
+				domElementAttachment="form" header="#{msgs.personEducationDelete}">
+				<h:panelGroup id="confirm-delete-education">
+					<h:outputText value="#{msgs.personEducationReallyDelete}" />
+					<h:panelGrid id="buttons-confirm-education" columns="2"
+						styleClass="buttons buttons-confirm">
+						<a4j:commandButton value="#{msgs.commonYes}"
+							action="#{personBean.removePersonEducation}"
+							render="educationPanel" execute="@this"
+							oncomplete="#{rich:component('confirm-delete-education-popup')}.hide();" />
+						<a4j:commandButton value="#{msgs.commonNo}"
+							onclick="#{rich:component('confirm-delete-education-popup')}.hide(); return false;" />
+					</h:panelGrid>
+				</h:panelGroup>
+			</rich:popupPanel>
+
+			<rich:popupPanel id="confirm-delete-career-popup" autosized="true"
+				domElementAttachment="form" header="#{msgs.personCareerDelete}">
+				<h:panelGroup id="confirm-delete-career">
+					<h:outputText value="#{msgs.personCareerReallyDelete}" />
+					<h:panelGrid id="buttons-confirm-career" columns="2"
+						styleClass="buttons buttons-confirm">
+						<a4j:commandButton value="#{msgs.commonYes}"
+							action="#{personBean.removePersonCareer}" render="careerPanel"
+							execute="@this"
+							oncomplete="#{rich:component('confirm-delete-career-popup')}.hide();" />
+						<a4j:commandButton value="#{msgs.commonNo}"
+							onclick="#{rich:component('confirm-delete-career-popup')}.hide(); return false;" />
+					</h:panelGrid>
+				</h:panelGroup>
+			</rich:popupPanel>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+</html>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:cc="http://java.sun.com/jsf/composite/ccs">
+<body>
+	<ui:composition>
+		<div id="header">
+			<h:panelGroup id="header-left" />
+			<h:panelGroup id="header-right" layout="block"
+				rendered="#{!empty personBean.person}">
+				<h:form id="contactForm">
+					<h1>
+						<h:outputText value="#{personBean.person.name}" />
+					</h1>
+					<h2>
+						<h:outputText value="#{personBean.person.rolesAsString}" />
+					</h2>
+					<h3>
+						<h:panelGroup id="contactInfo">
+							<rich:tooltip styleClass="tooltip" layout="block"
+								followMouse="false" target="contactInfo">
+								<span> <cc:navigfield colon="true"
+										labelValue="#{msgs.userEmail}" textValue="#{personBean.person.email}" /><br />
+									<cc:navigfield colon="true" labelValue="#{msgs.userWebsite}"
+										textValue="#{personBean.person.website}" /><br /> <cc:navigfield
+										colon="true" labelValue="#{msgs.userDepartment}"
+										textValue="#{personBean.person.department}" /><br /> <cc:navigfield
+										colon="true" labelValue="#{msgs.userPhone}"
+										textValue="#{personBean.person.phone}" />
+								</span>
+							</rich:tooltip>
+							<h:outputText value="#{msgs.commonContactInfo}" />
+						</h:panelGroup>
+					</h3>
+				</h:form>
+				<a4j:mediaOutput element="img" cacheable="false" session="false"
+							createContent="#{imageLoader.paint}" value="#{personBean.person.imageFile.id}"
+							mimeType="image/jpeg" rendered="#{not empty personBean.person.imageFile.id}" 
+							id="header-right-foto"/>
+				<a4j:status startStyleClass="header-status"
+					stopStyleClass="header-status">
+					<f:facet name="start">
+						<h:graphicImage library="images" name="ajax-loader.gif" alt="" />
+					</f:facet>
+					<f:facet name="stop">
+						<h:graphicImage library="images" name="ajax-loader-empty.gif"
+							alt="" />
+					</f:facet>
+				</a4j:status>
+			</h:panelGroup>
+		</div>
+	</ui:composition>
+</body>
+</html>

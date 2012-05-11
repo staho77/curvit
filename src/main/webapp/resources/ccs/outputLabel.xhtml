@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:composite="http://java.sun.com/jsf/composite">
+
+<composite:interface>
+	<composite:attribute name="forId" required="true"></composite:attribute>
+	<composite:attribute name="colon" required="false" default="true"></composite:attribute>
+	<composite:attribute name="value" required="false"></composite:attribute>
+	<composite:attribute name="required" required="false"></composite:attribute>
+</composite:interface>
+
+<composite:implementation>
+	<h:outputLabel value="#{cc.attrs.value}#{cc.attrs.colon ? ':' : ''}"
+		for="#{cc.attrs.forId}"
+		styleClass="#{((not empty cc.attrs.required) and cc.attrs.required) ? 'label-bold' : ''}"
+		rendered="true" />
+	<h:panelGroup styleClass="label-required"
+		rendered="#{((not empty cc.attrs.required) and cc.attrs.required)}"> *</h:panelGroup>
+</composite:implementation>
+
+</html>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:rich="http://richfaces.org/rich"
+	  xmlns:a4j="http://richfaces.org/a4j">
+<ui:composition>
+
+	<h:panelGroup id="buttons-content" layout="block">
+		<rich:jQuery selector=".buttons-message-text"
+					 query="show(0, function() {setTimeout(function() {jQuery('.buttons-message-text').fadeOut('fast');}, 1000);})"
+					 rendered="#{not empty requestScope.saveSuccessful}" />
+		<h:panelGroup id="buttons-message" class="buttons-message" layout="block" style="width: 480px;">
+			<h:panelGroup id="buttons-message-text" class="buttons-message-text" layout="block">
+				<h:outputText value="#{msgs.commonSaveSuccessful}" />
+			</h:panelGroup>
+		</h:panelGroup>
+		<h:panelGrid id="buttons"
+					 columns="3" columnClasses="buttons-left, buttons-center, buttons-right"
+					 styleClass="buttons" style="width: 480px;">
+			<h:commandButton id="previous" immediate="true" value="#{msgs.buttonPrevious}" style="margin: 0 auto 0 0;"
+				action="#{wizardBean.previousButtonClicked}"
+				disabled="#{not wizardBean.previousButtonEnabled}" />
+			<a4j:commandButton id="save" value="#{msgs.buttonSave}" style="margin: 0 auto;"
+				action="#{wizardBean.saveButtonClicked}"
+				execute="content-fields" render=":content-left, :content-right"
+				disabled="#{not wizardBean.saveButtonEnabled}" />
+			<h:commandButton id="next" immediate="true" value="#{msgs.buttonNext}" style="margin: 0 0 0 auto;"
+				action="#{wizardBean.nextButtonClicked}"
+				disabled="#{not wizardBean.nextButtonEnabled}" />
+		</h:panelGrid>
+	</h:panelGroup>
+	
+</ui:composition>
+</html>

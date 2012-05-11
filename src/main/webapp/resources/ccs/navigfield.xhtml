@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:composite="http://java.sun.com/jsf/composite"
+	xmlns:cc="http://java.sun.com/jsf/composite/ccs">
+
+<composite:interface>
+	<composite:attribute name="labelValue" required="false"></composite:attribute>
+	<composite:attribute name="textValue" required="false"></composite:attribute>
+	<composite:attribute name="colon" required="false" default="true"></composite:attribute>
+</composite:interface>
+
+<composite:implementation>
+	<h:outputText styleClass="navig_lbl"
+		value="#{cc.attrs.labelValue}#{cc.attrs.colon ? ' : ' : ''}" />
+	<h:outputText styleClass="navig_txt" value="#{cc.attrs.textValue}" />
+</composite:implementation>
+
+</html>

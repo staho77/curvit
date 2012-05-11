@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<faces-config version="2.0" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
+	<!-- Settings for Application -->
+	<application>
+		<locale-config>
+			<default-locale>sk</default-locale>
+			<supported-locale>en</supported-locale>
+		</locale-config>
+		<message-bundle>com.staho.ms.messages</message-bundle>
+		<resource-bundle>
+			<base-name>com.staho.ms.messages</base-name>
+			<var>msgs</var>
+		</resource-bundle>
+	</application>
+	<factory>
+		<exception-handler-factory>com.staho.ms.jsf.exception.CommonExceptionHandlerFactory</exception-handler-factory>
+	</factory>
+	<navigation-rule>
+		<from-view-id>*</from-view-id>
+		<navigation-case>
+			<from-outcome>userAdministration</from-outcome>
+			<to-view-id>/userAdministration.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>imageAdministration</from-outcome>
+			<to-view-id>/imageAdministration.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>home</from-outcome>
+			<to-view-id>/cv.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+</faces-config>

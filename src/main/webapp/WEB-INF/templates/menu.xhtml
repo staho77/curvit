@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich">
+<body>
+	<ui:composition>
+		<div id="menu">
+			<h:form id="menuForm">
+				<rich:toolbar id="menuToolbar">
+					<rich:dropDownMenu mode="ajax" label="#{msgs.menuHome}"
+						styleClass="rf-ddm-no-border">
+						<rich:menuItem mode="server" action="home">
+							<h:outputText value="#{msgs.menuHome}" />
+						</rich:menuItem>
+					</rich:dropDownMenu>
+					<rich:dropDownMenu mode="ajax" label="#{msgs.menuAdministration}"
+						styleClass="rf-ddm-no-border">
+						<rich:menuItem mode="server" action="userAdministration">
+							<h:outputText value="#{msgs.menuAdministrationUser}" />
+						</rich:menuItem>
+						<rich:menuItem mode="server" action="imageAdministration">
+							<h:outputText value="#{msgs.menuAdministrationPicture}" />
+						</rich:menuItem>
+					</rich:dropDownMenu>
+					<rich:dropDownMenu mode="ajax" label="#{msgs.menuContactMe}"
+						styleClass="rf-ddm-no-border">
+						<rich:menuItem title="#{msgs.menuFacebook}"
+							icon="#{resource['images:icon-facebook.png']}"
+							onclick="window.open('#{personBean.person.linkFacebook}')"
+							rendered="#{not empty personBean.person.linkFacebook}">
+							<h:outputText value="#{msgs.menuFacebook}" />
+						</rich:menuItem>
+						<rich:menuItem title="#{msgs.menuGithub}"
+							icon="#{resource['images:icon-github.png']}"
+							onclick="window.open('#{personBean.person.linkGithub}')"
+							rendered="#{not empty personBean.person.linkGithub}">
+							<h:outputText value="#{msgs.menuGithub}" />
+						</rich:menuItem>
+						<rich:menuItem title="#{msgs.menuLinkedIn}"
+							icon="#{resource['images:icon-linkedin.png']}"
+							onclick="window.open('#{personBean.person.linkLinkedIn}')"
+							rendered="#{not empty personBean.person.linkLinkedIn}">
+							<h:outputText value="#{msgs.menuLinkedIn}" />
+						</rich:menuItem>
+						<rich:menuItem title="#{msgs.menuSkype}"
+							icon="#{resource['images:icon-skype.png']}"
+							onclick="document.location.href='skype:#{personBean.person.skypeName}?chat'"
+							rendered="#{not empty personBean.person.skypeName}">
+							<h:outputText value="#{msgs.menuSkype}" />
+						</rich:menuItem>
+					</rich:dropDownMenu>
+					<rich:dropDownMenu mode="ajax" label="#{msgs.menuRichFacesLinks}"
+						styleClass="rf-ddm-no-border">
+						<rich:menuItem
+							onclick="window.open('http://labs.jboss.com/jbossrichfaces')">
+							<h:outputText value="#{msgs.menuRichFacesHome}" />
+						</rich:menuItem>
+						<rich:menuItem
+							onclick="window.open('http://jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=261')">
+							<h:outputText value="#{msgs.menuRichFacesForum}" />
+						</rich:menuItem>
+					</rich:dropDownMenu>
+				</rich:toolbar>
+			</h:form>
+		</div>
+	</ui:composition>
+</body>
+</html>
